@@ -1,11 +1,12 @@
-const { ERROR } = require("./utils/httpStatusText");
 const express = require("express");
 var cors = require("cors");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
+const path=require('path');
 const courseRouter = require("./routes/courses.route");
 const userRouter = require("./routes/users.route");
+const { ERROR } = require("./utils/httpStatusText");
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -19,6 +20,9 @@ app.use(cors());
 //middleware enable me to read data in body request
 app.use(express.json());
 // app.use(bodyParser.json());
+app.use('/uploads',express.static(path.join(__dirname,'/uploads')));
+
+//___________ROUTES_____________________________________________
 app.use("/api/courses", courseRouter);//====>courses routes
 app.use("/api/users", userRouter);//===>users routes
 //handle not found routes
@@ -36,6 +40,8 @@ app.use((error, req, res, next) => {
       data: null,
     });
 });
+//___________ROUTES_____________________________________________
+
 //listening port
 app.listen(process.env.PORT || 4000, () => {
   console.log("listentig to pore 5000");

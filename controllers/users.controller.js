@@ -34,7 +34,7 @@ const login = asyncWrapper(async (req, res, next) => {
   }
   const matchedPassword = await bcrypt.compare(password, user.password);
   if (user && matchedPassword) {
-    const token = await generateToken({email:user.email,id:user._id});
+    const token = await generateToken({email:user.email,id:user._id,role:user.role});
 
     return res.json({ status: SUCCESS, data:{token} });
   } else {
@@ -44,7 +44,7 @@ const login = asyncWrapper(async (req, res, next) => {
 });
 
 const register = asyncWrapper(async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password,role } = req.body;
   const oldUser = await Users.findOne({ email });
   if (oldUser) {
     appErrors.create("this user is already exists", 400, FAIL);
@@ -58,9 +58,11 @@ const register = asyncWrapper(async (req, res, next) => {
     lastName,
     email,
     password: hashedPassword,
+    role,
+    avatar:req.file.filename
   });
   //generate token
-  const token = await generateToken({email:newUser.email,id:newUser._id});
+  const token = await generateToken({email:newUser.email,id:newUser._id,role:newUser.role});
   newUser.token = token;
 
   await newUser.save();

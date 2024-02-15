@@ -11,9 +11,9 @@ const verifyToken=(req,res,next)=>{
     const token=auth.split(" ")[1];
     try{
         const decodedToken=jwt.verify(token, process.env.JWT_SECRETKEY);
-
-        console.log("token",token);
-        console.log("decodedToken",decodedToken);
+        // console.log("token",token);
+        // console.log("decodedToken",decodedToken);
+        req.decodedToken=decodedToken; //to enable allowTo middleware to show this decodesToken include middleware
         return next();
     }catch(error){
         appErrors.create("Invalid Token",401,FAIL);
